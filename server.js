@@ -10,7 +10,7 @@ const MONGOURL =
   process.env.MONGODB_URI || "mongodb://localhost:27017/dadjokes";
 const whitelist = [
   "http://localhost:3000",
-  "https://quirky-knuth-bf45cb.netlify.app",
+  "https://peaceful-feynman-05c9a5.netlify.app",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
