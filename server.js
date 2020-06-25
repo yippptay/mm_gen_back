@@ -1,48 +1,52 @@
-//  DEPENDENCIES
 const express = require("express");
 const app = express();
+// require("dotenv").config();
 const mongoose = require("mongoose");
 const cors = require("cors");
+const PORT = process.env.PORT;
+const WHITELIST = process.env.WHITELIST;
+const MONGODB_URI = process.env.MONGODB_URI; //Check that MONGODB_URI is correct for heroku
 
-//GLOBALS
-const PORT = process.env.PORT || 3000;
-const MONGOURL =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/dadjokes";
-const whitelist = [
-  "http://localhost:3000",
-  "https://peaceful-feynman-05c9a5.netlify.app",
-];
+console.log("Whitelist", WHITELIST);
 const corsOptions = {
-  origin: function (origin, callback) {
-    console.log(origin);
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: process.env.cor,
 };
-
-//DB CONNECTION
-mongoose.connection.on("error", (err) =>
-  console.log(err.message + " is Mongod not running?")
-);
-mongoose.connection.on("disconnected", () => console.log("mongo disconnected"));
-mongoose.connect(MONGOURL, { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.once("open", () => console.log("connected to mongoose..."));
-
-// MIDDLEWARE
 app.use(cors(corsOptions));
+
+////// Globals
+const bookmarkdController = require("./controllers/bookmarkd.js");
+
+/////////////////////////////////////////////////////////////////
+// Mongo DB Setup
+//////////////////////////////////////////////////////////////////
+const db = mongoose.connection;
+mongoose.connect(MONGODB_URI, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+});
+db.on("error", (error) =>
+  console.log(error.message + "Dude you messed up check yourself")
+);
+db.on("connected", () =>
+  console.log(
+    "you connected, your a MongoDB Wizard, and your connected to ",
+    MONGODB_URI
+  )
+);
+db.on("disconnected", () => console.log("by have a wonderful time"));
+db.on("open", () => {
+  console.log("Connection made!");
+});
+
+/////////////////////////////////////////////////////////////////
+// Mongo DB Setup
+//////////////////////////////////////////////////////////////////
+app.use(cors());
 app.use(express.json());
 
-// CONTROLLERS/ROUTES
-const dadJokesController = require("./controllers/dadjokes.js");
-app.use("/dadjokes", dadJokesController);
-
-// app.get('/', (req, res)=>{
-//     res.send('What happened when the cannibal came home late for dinner?...<br/>His wife gave him the cold shoulder')
-// })
+////////// middleware
+app.use("/bookmarks/", bookmarkdController);
 
 app.listen(PORT, () => {
-  console.log(`Listening to Dad Jokes on port: ${PORT}`);
+  console.log("🎉🎊", "celebrations happening on port", PORT, "🎉🎊");
 });
