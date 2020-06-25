@@ -39,7 +39,7 @@ app.engine("jsx", require("express-react-views").createEngine());
  * Routes
  **/
 // localhost:3000
-app.get("/api", routes);
+app.get("/", routes);
 
 /****
  * New routes
